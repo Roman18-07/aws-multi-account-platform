@@ -1,0 +1,35 @@
+# Replace example identities, organization root and domain before planning.
+environment                    = "global"
+aws_region                     = "us-east-1"
+root_id                        = "r-abcd"
+account_email_domain           = "example.com"
+budget_notification_email      = "aws-billing@example.com"
+budget_main_monthly_cost_alarm = "1000.0"
+
+management_admin_groups = ["example-management-admin"]
+
+management_engineer_groups = ["example-management-engineer"]
+
+security_admin_groups = ["example-security-admin"]
+
+security_engineer_groups = ["example-security-engineer"]
+
+infra_admin_groups = ["example-infra-admin"]
+
+infra_engineer_groups = ["example-infra-engineer"]
+
+shared_admin_groups = ["example-shared-admin"]
+
+shared_engineer_groups = ["example-shared-engineer"]
+
+staging_admin_groups = ["example-staging-admin"]
+
+staging_engineer_groups = ["example-staging-engineer"]
+
+prod_admin_groups = ["example-prod-admin"]
+
+prod_engineer_groups = ["example-prod-engineer"]
+
+data_science_sandbox_admin_groups = ["example-data-science-sandbox-admin"]
+
+data_science_sandbox_engineer_groups = ["example-data-science-sandbox-engineer"]

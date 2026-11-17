@@ -1,0 +1,58 @@
+environment            = "global"
+aws_region             = "us-east-1"
+github_org_name        = "example-org"
+bootstrap_repository   = "aws-multi-account-platform"
+terraform_state_prefix = "example-platform"
+
+# Fictitious IDs: replace with the actual accounts created/adopted in aws-base.
+account_ids = {
+  "management"           = "111111111111"
+  "security"             = "222222222222"
+  "shared"               = "333333333333"
+  "staging"              = "444444444444"
+  "prod"                 = "555555555555"
+  "data-science-sandbox" = "666666666666"
+}
+
+infra_github_repos_config = {
+  "example-platform-infra" = {
+    repo_branches = []
+    permissions   = ["terraform", "readOnly"]
+  }
+}
+
+management_github_repos_config = {
+  "example-platform-infra" = {
+    permissions = ["readOnly"]
+  }
+}
+
+security_github_repos_config = {
+  "example-platform-infra" = {
+    permissions = ["readOnly"]
+  }
+}
+
+shared_github_repos_config = {
+  "example-platform-infra" = {
+    permissions = ["readOnly"]
+  }
+}
+
+staging_github_repos_config = {
+  "example-platform-infra" = {
+    permissions = ["readOnly"]
+  }
+}
+
+prod_github_repos_config = {
+  "example-platform-infra" = {
+    permissions = ["readOnly"]
+  }
+}
+
+data_science_sandbox_github_repos_config = {
+  "example-platform-infra" = {
+    permissions = ["readOnly"]
+  }
+}

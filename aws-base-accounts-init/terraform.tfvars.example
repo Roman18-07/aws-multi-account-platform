@@ -1,0 +1,15 @@
+environment            = "global"
+aws_region             = "us-east-1"
+github_org_name        = "example-org"
+github_repo_access_for = "aws-multi-account-platform"
+terraform_state_prefix = "example-platform"
+
+account_profiles = {
+  "management"           = "example-management-admin"
+  "security"             = "example-security-admin"
+  "infra"                = "example-infra-admin"
+  "shared"               = "example-shared-admin"
+  "staging"              = "example-staging-admin"
+  "prod"                 = "example-prod-admin"
+  "data-science-sandbox" = "example-data-science-sandbox-admin"
+}

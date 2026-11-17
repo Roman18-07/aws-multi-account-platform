@@ -1,0 +1,5 @@
+bucket         = "example-platform-terraform-state"
+key            = "aws-multi-account-platform/aws-github-roles/global-us-east-1.tfstate"
+region         = "us-east-1"
+dynamodb_table = "example-platform-terraform-locks"
+encrypt        = true

@@ -1,0 +1,85 @@
+name: validate
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  terraform-validate:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        stack:
+          - aws-base
+          - aws-base-accounts-init
+          - aws-github-roles
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: 1.11.5
+          tofu_wrapper: false
+
+      - name: Validate Terraform and example configuration
+        env:
+          STACK: ${{ matrix.stack }}
+        run: python3 scripts/validate.py "$STACK"
+
+  secrets-check:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    env:
+      GITLEAKS_VERSION: 8.24.2
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install Gitleaks
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$(uname -m)" in
+            aarch64|arm64) architecture=arm64 ;;
+            x86_64) architecture=x64 ;;
+            *) echo "Unsupported runner architecture" >&2; exit 1 ;;
+          esac
+          archive="gitleaks_${GITLEAKS_VERSION}_linux_${architecture}.tar.gz"
+          download_dir=$(mktemp -d)
+          base_url="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}"
+          curl --fail --silent --show-error --location --retry 3 "${base_url}/${archive}" -o "${download_dir}/${archive}"
+          curl --fail --silent --show-error --location --retry 3 "${base_url}/gitleaks_${GITLEAKS_VERSION}_checksums.txt" -o "${download_dir}/CHECKSUMS"
+          (cd "$download_dir" && grep -F " ${archive}" CHECKSUMS | sha256sum --check --strict -)
+          tar -xzf "${download_dir}/${archive}" -C "$download_dir" gitleaks
+          mkdir -p "$HOME/.local/bin"
+          install -m 0755 "${download_dir}/gitleaks" "$HOME/.local/bin/gitleaks"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Scan Git history for secrets
+        run: gitleaks git . --redact --log-opts="--all --full-history"
+
+      - name: Scan current files for secrets
+        if: ${{ !cancelled() }}
+        run: gitleaks dir . --redact
